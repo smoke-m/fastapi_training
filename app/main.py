@@ -1,10 +1,14 @@
-from fastapi import Body, FastAPI, Path, Query
+from fastapi import FastAPI, Path, Query
 from typing import Optional
 from enum import IntEnum
-from schemas import Person, EducationLevel
+from app.schemas.schemas import EducationLevel
+from app.api.endpoints import router
 
 # Создание объекта приложения.
 app = FastAPI(docs_url='/swagger')
+
+# Подключаем роутер к приложению.
+app.include_router(router)
 
 
 class Tag(IntEnum):
@@ -79,28 +83,28 @@ def greetings(
 #     education_level: Optional[EducationLevel]
 
 
-# Меняем метод GET на POST, указываем статичный адрес.
-@app.post('/hello')
-# Вместо множества параметра теперь будет только один - person,
-# в качестве аннотации указываем класс Person.
-def greeting(
-        person: Person = Body(
-            ..., examples=Person.Config.schema_extra['examples']
-        )
-) -> dict[str, str]:
-    # Обращение к атрибутам класса происходит через точку;
-    # при этом будут работать проверки на уровне типов данных.
-    # В IDE будут работать автодополнения.
-    if isinstance(person.surname, list):
-        surnames = ' '.join(person.surname)
-    else:
-        surnames = person.surname
-    result = ' '.join([person.name, surnames])
-    result = result.title()
-    if person.age is not None:
-        result += ', ' + str(person.age)
-    if person.education_level is not None:
-        result += ', ' + person.education_level.lower()
-    if person.is_staff:
-        result += ', сотрудник'
-    return {'Hello': result}
+# # Меняем метод GET на POST, указываем статичный адрес.
+# @app.post('/hello')
+# # Вместо множества параметра теперь будет только один - person,
+# # в качестве аннотации указываем класс Person.
+# def greeting(
+#         person: Person = Body(
+#             ..., examples=Person.Config.schema_extra['examples']
+#         )
+# ) -> dict[str, str]:
+#     # Обращение к атрибутам класса происходит через точку;
+#     # при этом будут работать проверки на уровне типов данных.
+#     # В IDE будут работать автодополнения.
+#     if isinstance(person.surname, list):
+#         surnames = ' '.join(person.surname)
+#     else:
+#         surnames = person.surname
+#     result = ' '.join([person.name, surnames])
+#     result = result.title()
+#     if person.age is not None:
+#         result += ', ' + str(person.age)
+#     if person.education_level is not None:
+#         result += ', ' + person.education_level.lower()
+#     if person.is_staff:
+#         result += ', сотрудник'
+#     return {'Hello': result}
